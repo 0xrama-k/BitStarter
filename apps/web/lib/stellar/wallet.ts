@@ -14,14 +14,21 @@ export type WalletSession = {
 };
 
 type BrowserWallets = typeof globalThis & {
-  freighterApi?: {
-    getPublicKey: () => Promise<string>;
-    isConnected: () => Promise<boolean>;
-    requestAccess?: () => Promise<string>;
-  };
+  freighterApi?: FreighterApi;
+  freighter?: FreighterApi;
   albedo?: {
     publicKey: (options?: { require_existing?: boolean }) => Promise<{ pubkey: string }>;
   };
+};
+
+type FreighterAddressResult = string | { address?: string; publicKey?: string; error?: string };
+type FreighterConnectedResult = boolean | { isConnected?: boolean; error?: string };
+
+type FreighterApi = {
+  getPublicKey?: () => Promise<FreighterAddressResult>;
+  getAddress?: () => Promise<FreighterAddressResult>;
+  isConnected?: () => Promise<FreighterConnectedResult>;
+  requestAccess?: () => Promise<FreighterAddressResult>;
 };
 
 export const walletProviders: WalletProvider[] = [
@@ -46,6 +53,39 @@ export const defaultWalletProviderId: WalletProviderId = "freighter";
 
 export function getWalletProvider(providerId: WalletProviderId): WalletProvider {
   return walletProviders.find((provider) => provider.id === providerId) ?? walletProviders[0];
+}
+
+function sleep(milliseconds: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+}
+
+function readFreighter(): FreighterApi | undefined {
+  const wallets = globalThis as BrowserWallets;
+  return wallets.freighterApi ?? wallets.freighter;
+}
+
+async function waitForFreighter(timeoutMilliseconds = 2000): Promise<FreighterApi | undefined> {
+  const startedAt = Date.now();
+  let freighter = readFreighter();
+
+  while (!freighter && Date.now() - startedAt < timeoutMilliseconds) {
+    await sleep(100);
+    freighter = readFreighter();
+  }
+
+  return freighter;
+}
+
+function normalizeAddress(result: FreighterAddressResult): string {
+  if (typeof result === "string") return result;
+  if (result.error) throw new Error(result.error);
+  return result.address ?? result.publicKey ?? "";
+}
+
+function normalizeConnected(result: FreighterConnectedResult): boolean {
+  if (typeof result === "boolean") return result;
+  if (result.error) throw new Error(result.error);
+  return Boolean(result.isConnected);
 }
 
 export async function connectWallet(providerId: WalletProviderId): Promise<WalletSession> {
@@ -75,20 +115,23 @@ export async function connectWallet(providerId: WalletProviderId): Promise<Walle
     };
   }
 
-  const freighter = wallets.freighterApi;
+  const freighter = await waitForFreighter();
 
   if (!freighter) {
-    throw new Error("Freighter is not available in this browser.");
+    throw new Error("Freighter is installed, but the page cannot access it. Enable the extension for localhost, unlock it, then refresh.");
   }
 
-  const publicKey = freighter.requestAccess
-    ? await freighter.requestAccess()
-    : (await freighter.isConnected())
-      ? await freighter.getPublicKey()
-      : "";
+  let publicKey = "";
+
+  if (freighter.requestAccess) {
+    publicKey = normalizeAddress(await freighter.requestAccess());
+  } else if (freighter.isConnected && normalizeConnected(await freighter.isConnected())) {
+    const getAddress = freighter.getAddress ?? freighter.getPublicKey;
+    publicKey = getAddress ? normalizeAddress(await getAddress()) : "";
+  }
 
   if (!publicKey) {
-    throw new Error("Freighter wallet is not connected.");
+    throw new Error("Freighter is available, but no account was shared. Unlock Freighter and approve access.");
   }
 
   return {
