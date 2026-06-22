@@ -1,6 +1,7 @@
 target/
 node_modules/
 .next/
+contracts/**/test_snapshots/
 dist/
 coverage/
 .env
