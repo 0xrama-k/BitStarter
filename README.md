@@ -86,8 +86,9 @@ Open `http://localhost:3000`.
 ```txt
 NEXT_PUBLIC_STELLAR_NETWORK=testnet
 NEXT_PUBLIC_STELLAR_RPC_URL=https://soroban-testnet.stellar.org
-NEXT_PUBLIC_FACTORY_CONTRACT_ID=
-NEXT_PUBLIC_REFUND_MANAGER_CONTRACT_ID=
+NEXT_PUBLIC_FACTORY_CONTRACT_ID=CCD3HXGDXEKNWXPGR7X3SP6PMANFM2DTSOTML47DOEL376PMI5AAZBB4
+NEXT_PUBLIC_REFUND_MANAGER_CONTRACT_ID=CCGHFVCK6S67QJWYOVE6OSOVDKQUFRRY5XIDFGTITN52IYNJD3P3443E
+NEXT_PUBLIC_PREORDER_CAMPAIGN_WASM_HASH=e007bdf2adc210a0121587afde1cfaf18f3b30500522d0bdf06f1324af0d36fe
 ```
 
 Do not expose deployer private keys with `NEXT_PUBLIC_`.
@@ -133,13 +134,15 @@ Live demo link: `TODO`
 
 ## Contract Addresses / IDs
 
-- CampaignFactory: `TODO`
-- RefundManager: `TODO`
-- Example PreorderCampaign: `TODO`
+- CampaignFactory: `CCD3HXGDXEKNWXPGR7X3SP6PMANFM2DTSOTML47DOEL376PMI5AAZBB4`
+- RefundManager: `CCGHFVCK6S67QJWYOVE6OSOVDKQUFRRY5XIDFGTITN52IYNJD3P3443E`
+- PreorderCampaign Wasm hash: `e007bdf2adc210a0121587afde1cfaf18f3b30500522d0bdf06f1324af0d36fe`
 
 ## Example Transaction Hash
 
-`TODO`
+Factory initialization: `a7dabbb489332a5c49029768aa13c18c32f4493b6c6959ee0429e9b14bb06936`
+
+Explorer: `https://stellar.expert/explorer/testnet/tx/a7dabbb489332a5c49029768aa13c18c32f4493b6c6959ee0429e9b14bb06936`
 
 ## Screenshots
 
@@ -156,8 +159,8 @@ Demo video link: `TODO`
 - [ ] Public GitHub repository
 - [ ] 10+ meaningful commits
 - [ ] Vercel live demo link
-- [ ] Stellar Testnet contract IDs
-- [ ] Example transaction hash
+- [x] Stellar Testnet contract IDs
+- [x] Example transaction hash
 - [ ] Mobile UI screenshot
 - [ ] CI screenshot
 - [ ] Test output screenshot

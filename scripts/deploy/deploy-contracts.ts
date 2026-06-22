@@ -11,6 +11,7 @@ stellar(["keys", "fund", source, "--network", network]);
 execFileSync("cargo", ["build", "--workspace", "--target", "wasm32v1-none", "--release"], { stdio: "inherit" });
 
 const factoryId = stellar(["contract", "deploy", "--wasm", "target/wasm32v1-none/release/campaign_factory.wasm", "--source", source, "--network", network]);
+const preorderCampaignWasmHash = stellar(["contract", "upload", "--wasm", "target/wasm32v1-none/release/preorder_campaign.wasm", "--source", source, "--network", network]);
 const refundId = stellar(["contract", "deploy", "--wasm", "target/wasm32v1-none/release/refund_manager.wasm", "--source", source, "--network", network]);
 
-console.log({ factoryId, refundId });
+console.log({ factoryId, preorderCampaignWasmHash, refundId });
