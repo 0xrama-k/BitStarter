@@ -4,6 +4,8 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ActivityFeed } from "@/features/realtime/ActivityFeed";
 import { getCampaign } from "@/lib/contracts/campaignClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function CampaignDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const campaign = await getCampaign(decodeURIComponent(id));

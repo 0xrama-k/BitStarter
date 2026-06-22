@@ -13,3 +13,4 @@ bitstarter-shared.workspace = true
 
 [dev-dependencies]
 soroban-sdk = { workspace = true, features = ["testutils"] }
+preorder-campaign = { path = "../preorder_campaign" }

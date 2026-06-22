@@ -13,6 +13,9 @@ export function ActivityFeed({ campaignId }: { campaignId?: string }) {
         <h2 className="font-semibold">Live Activity</h2>
       </div>
       {loading ? <p className="mt-4 text-sm text-slate-600">Loading live activity...</p> : null}
+      {!loading && events.length === 0 ? (
+        <p className="mt-4 text-sm text-slate-600">No recent contract events found.</p>
+      ) : null}
       <ul className="mt-4 space-y-3 text-sm">
         {events.map((event) => (
           <li key={event.id} className="border-l-2 border-accent pl-3 text-slate-700">

@@ -39,13 +39,16 @@ Environment variables:
 - `NEXT_PUBLIC_FACTORY_CONTRACT_ID`
 - `NEXT_PUBLIC_REFUND_MANAGER_CONTRACT_ID`
 - `NEXT_PUBLIC_PREORDER_CAMPAIGN_WASM_HASH`
+- `NEXT_PUBLIC_STELLAR_READ_SOURCE_ACCOUNT`
 
 ## Current Testnet Deployment
 
 - Network: Stellar Testnet
-- CampaignFactory: `CCD3HXGDXEKNWXPGR7X3SP6PMANFM2DTSOTML47DOEL376PMI5AAZBB4`
+- CampaignFactory: `CCWOBOZBK4DMBKVZO6QEYPXMSXSY5TA66DBVVABAGHN5NUH4MBHDH5KA`
 - RefundManager: `CCGHFVCK6S67QJWYOVE6OSOVDKQUFRRY5XIDFGTITN52IYNJD3P3443E`
 - PreorderCampaign Wasm hash: `e007bdf2adc210a0121587afde1cfaf18f3b30500522d0bdf06f1324af0d36fe`
-- Factory initialize transaction hash: `a7dabbb489332a5c49029768aa13c18c32f4493b6c6959ee0429e9b14bb06936`
-- Factory deploy transaction hash: `45a6fdd1b5fcd57be03e1fe73ad04f3f8524a24add3ebdb0bd6c4181d6349c76`
+- Demo PreorderCampaign: `CAD6TNAY6Y5PGIZCZHWXUFOYILQBZEHQ5BOSDJEB35TJ6NJNLIILSV3R`
+- Factory initialize transaction hash: `5cbc040bf4d5c3f51c47ede4c45f8659e14e322e2ddc48171cb99e19bea67865`
+- Demo campaign creation transaction hash: `a612da34a5adb5d6f58b0983441723d368b2a783f02015b2981a6ba27beb704c`
+- Factory deploy transaction hash: `cc3bd2202d0f8b9e32d49dbe1d87a942c694e0152a5347d1936a1dcd61b0d0ad`
 - RefundManager deploy transaction hash: `b37c0fb327eacf5a46076e183ca9fe50eecb52d8712325909ae0ed47120e1459`

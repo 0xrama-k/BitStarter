@@ -3,6 +3,16 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CreateCampaignForm } from "@/features/campaigns/CreateCampaignForm";
 
+vi.mock("@/lib/contracts/campaignClient", () => ({
+  createCampaign: vi.fn().mockImplementation(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    return {
+      transactionHash: "real-testnet-hash",
+      campaignId: "CCAMPAIGN"
+    };
+  })
+}));
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: vi.fn() })
 }));

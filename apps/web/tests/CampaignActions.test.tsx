@@ -2,7 +2,6 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CampaignActions } from "@/features/campaigns/CampaignActions";
-import { demoCampaigns } from "@/features/campaigns/demoData";
 
 vi.mock("@/lib/contracts/campaignClient", async () => {
   const actual = await vi.importActual<typeof import("@/lib/contracts/campaignClient")>("@/lib/contracts/campaignClient");
@@ -14,7 +13,17 @@ vi.mock("@/lib/contracts/campaignClient", async () => {
 
 describe("CampaignActions", () => {
   it("shows an error message on failed transaction", async () => {
-    render(<CampaignActions campaign={demoCampaigns[0]} />);
+    render(<CampaignActions campaign={{
+      id: "CCAMPAIGN",
+      title: "Open Source AI Course",
+      description: "A real Testnet campaign.",
+      seller: "GSELLER",
+      goalAmount: 1200,
+      totalRaised: 875,
+      deadline: "2027-01-01T00:00:00.000Z",
+      metadataUri: "ipfs://course",
+      status: "Active"
+    }} />);
 
     await userEvent.click(screen.getByRole("button", { name: "Place preorder" }));
 

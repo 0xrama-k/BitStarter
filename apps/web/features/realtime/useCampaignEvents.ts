@@ -3,23 +3,8 @@
 import { useEffect, useState } from "react";
 import type { CampaignEvent } from "./eventTypes";
 
-const seedEvents: CampaignEvent[] = [
-  {
-    id: "evt-created",
-    type: "campaign_created",
-    message: "New campaign created: Open Source AI Course",
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "evt-order",
-    type: "order_placed",
-    message: "50 XLM preorder placed",
-    createdAt: new Date().toISOString()
-  }
-];
-
 export function useCampaignEvents(campaignId?: string) {
-  const [events, setEvents] = useState<CampaignEvent[]>(seedEvents);
+  const [events, setEvents] = useState<CampaignEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

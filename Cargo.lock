@@ -228,6 +228,7 @@ name = "campaign-factory"
 version = "0.1.0"
 dependencies = [
  "bitstarter-shared",
+ "preorder-campaign",
  "soroban-sdk",
 ]
 
