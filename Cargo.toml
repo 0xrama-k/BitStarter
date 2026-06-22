@@ -1,0 +1,17 @@
+[workspace]
+resolver = "2"
+members = [
+  "contracts/shared",
+  "contracts/campaign_factory",
+  "contracts/preorder_campaign",
+  "contracts/refund_manager",
+]
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/your-org/bitstarter"
+
+[workspace.dependencies]
+soroban-sdk = "23.0.0"
+bitstarter-shared = { path = "contracts/shared" }
