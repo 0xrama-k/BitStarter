@@ -1,0 +1,10 @@
+import type { CampaignEvent } from "./eventTypes";
+
+export function parseContractEvent(raw: { id?: string; topic?: string; message?: string }): CampaignEvent {
+  return {
+    id: raw.id ?? crypto.randomUUID(),
+    type: (raw.topic ?? "order_placed") as CampaignEvent["type"],
+    message: raw.message ?? "Campaign activity detected on Stellar Testnet.",
+    createdAt: new Date().toISOString()
+  };
+}
