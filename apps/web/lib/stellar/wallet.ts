@@ -1,3 +1,5 @@
+import { getAddress, isConnected, requestAccess } from "@stellar/freighter-api";
+
 export type WalletProviderId = "freighter" | "albedo" | "demo";
 
 export type WalletProvider = {
@@ -88,6 +90,19 @@ function normalizeConnected(result: FreighterConnectedResult): boolean {
   return Boolean(result.isConnected);
 }
 
+async function connectFreighterWithPackage(): Promise<string> {
+  const connected = normalizeConnected(await isConnected());
+  if (!connected) {
+    throw new Error("Freighter is installed, but not connected. Unlock Freighter and allow this site.");
+  }
+
+  const accessResult = await requestAccess();
+  const accessAddress = normalizeAddress(accessResult);
+  if (accessAddress) return accessAddress;
+
+  return normalizeAddress(await getAddress());
+}
+
 export async function connectWallet(providerId: WalletProviderId): Promise<WalletSession> {
   const provider = getWalletProvider(providerId);
   const wallets = globalThis as BrowserWallets;
@@ -113,6 +128,18 @@ export async function connectWallet(providerId: WalletProviderId): Promise<Walle
       providerId,
       providerName: provider.name
     };
+  }
+
+  try {
+    const publicKey = await connectFreighterWithPackage();
+    return {
+      publicKey,
+      connected: true,
+      providerId,
+      providerName: provider.name
+    };
+  } catch {
+    // Fall through to legacy injected globals for older Freighter builds.
   }
 
   const freighter = await waitForFreighter();
