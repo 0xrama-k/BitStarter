@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, ChevronDown, LogOut, Wallet } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   connectWallet,
   defaultWalletProviderId,
@@ -12,16 +12,25 @@ import {
 } from "@/lib/stellar/wallet";
 
 const providerStorageKey = "bitstarter.walletProvider";
+const providerIds = walletProviders.map((provider) => provider.id);
+
+function isWalletProviderId(value: string | null): value is WalletProviderId {
+  return providerIds.includes(value as WalletProviderId);
+}
 
 export function WalletStatus() {
   const [session, setSession] = useState<WalletSession | null>(null);
-  const [providerId, setProviderId] = useState<WalletProviderId>(() => {
-    if (typeof window === "undefined") return defaultWalletProviderId;
-    return (window.localStorage.getItem(providerStorageKey) as WalletProviderId | null) ?? defaultWalletProviderId;
-  });
+  const [providerId, setProviderId] = useState<WalletProviderId>(defaultWalletProviderId);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const storedProviderId = window.localStorage.getItem(providerStorageKey);
+    if (isWalletProviderId(storedProviderId)) {
+      setProviderId(storedProviderId);
+    }
+  }, []);
 
   async function handleConnect(nextProviderId = providerId) {
     setLoading(true);
