@@ -2,15 +2,15 @@
 
 ## Overview
 
-BitStarter uses Stellar/Soroban smart contracts to create a trustless preorder escrow system. Campaign funds are locked until the campaign reaches its funding goal. If the campaign fails or is cancelled, buyers can claim refunds without trusting the seller.
+BitStarter uses Stellar/Soroban smart contracts to create a refund-protected investment crowdfunding system. A configurable share of each investment is usable by the developer, while the protected reserve can be refunded if the project is rejected or cancelled.
 
 ## Problem
 
-Digital product preorders often require buyers to trust a seller before the product exists. Sellers also need a clear way to prove demand before investing time into a launch.
+Early software projects often require investors to trust a developer before the product exists. Developers also need a clear way to access staged funding while giving investors refund protection.
 
 ## Solution
 
-BitStarter lets sellers create preorder campaigns with a goal and deadline. Buyers place preorders through Stellar Testnet contracts. Successful campaigns unlock seller withdrawal; failed or cancelled campaigns unlock buyer refunds.
+BitStarter lets developers create investment campaigns with a goal, deadline, refund ratio, usable ratio, and voting duration. Investors fund campaigns through Stellar Testnet contracts, vote with power proportional to invested capital, and can claim the protected reserve if a campaign is rejected or cancelled.
 
 ## Features
 
@@ -28,8 +28,9 @@ BitStarter lets sellers create preorder campaigns with a goal and deadline. Buye
 
 ```txt
 contracts/
+  escrow/
   campaign_factory/
-  preorder_campaign/
+  investment_campaign/
   refund_manager/
   shared/
 apps/web/
@@ -45,17 +46,18 @@ See [docs/architecture.md](docs/architecture.md) for details.
 
 ## Smart Contracts
 
-- `CampaignFactory`: initializes an admin, creates campaign records, tracks all campaigns, and stores seller-to-campaign mappings.
-- `PreorderCampaign`: tracks campaign metadata, buyer preorder totals, campaign status, seller withdrawal, and cancellation.
-- `RefundManager`: checks campaign state through inter-contract calls, prevents double refunds, and emits refund events.
+- `CampaignFactory`: initializes an admin, creates campaign records, tracks all campaigns, stores developer-to-campaign mappings, and passes the shared escrow address into each campaign.
+- `Escrow`: holds token custody for campaign investments. Investors deposit into escrow, and campaign contracts authorize releases to creators or investors.
+- `InvestmentCampaign`: tracks campaign metadata, investor positions, usable funds, refund reserves, weighted voting, final withdrawal, cancellation, and escrow release rules.
+- `RefundManager`: optional compatibility wrapper that delegates refund claims to the campaign contract; the campaign remains the refund source of truth.
 
 ## Inter-Contract Communication
 
-`RefundManager` creates a `PreorderCampaign` client for the target campaign contract and calls `get_status` plus `get_buyer_order` before allowing a refund.
+`RefundManager` creates an `InvestmentCampaign` client for the target campaign contract and delegates to `claim_refund`. Refund state and refund events are owned by the campaign contract.
 
 ## Event Streaming / Real-Time Updates
 
-Contracts emit events for campaign creation, order placement, goal reached, refunds, withdrawals, and cancellations. The frontend keeps all realtime logic in `apps/web/features/realtime`. The current Vercel-safe implementation uses polling with a parser abstraction; after deployment, wire the poller to Stellar RPC event responses for the configured contract IDs.
+Contracts emit events for campaign creation, investments, usable withdrawals, voting, finalization, refunds, remaining withdrawals, and cancellations. The frontend keeps all realtime logic in `apps/web/features/realtime`. The current Vercel-safe implementation uses polling with a parser abstraction; after deployment, wire the poller to Stellar RPC event responses for the configured contract IDs.
 
 ## Tech Stack
 
@@ -86,9 +88,11 @@ Open `http://localhost:3000`.
 ```txt
 NEXT_PUBLIC_STELLAR_NETWORK=testnet
 NEXT_PUBLIC_STELLAR_RPC_URL=https://soroban-testnet.stellar.org
-NEXT_PUBLIC_FACTORY_CONTRACT_ID=CCWOBOZBK4DMBKVZO6QEYPXMSXSY5TA66DBVVABAGHN5NUH4MBHDH5KA
-NEXT_PUBLIC_REFUND_MANAGER_CONTRACT_ID=CCGHFVCK6S67QJWYOVE6OSOVDKQUFRRY5XIDFGTITN52IYNJD3P3443E
-NEXT_PUBLIC_PREORDER_CAMPAIGN_WASM_HASH=e007bdf2adc210a0121587afde1cfaf18f3b30500522d0bdf06f1324af0d36fe
+NEXT_PUBLIC_FACTORY_CONTRACT_ID=CC56AKO3H3FJS3O6C4MKJK4QTHPXLZQMUPVRVZUXRYPYMO65AD3LNVUL
+NEXT_PUBLIC_ESCROW_CONTRACT_ID=CCXUWIED3RKTFDZQH75D7BMG2N73VNNYQZSCX6KCAHIPRSPROOXTIXH7
+NEXT_PUBLIC_REFUND_MANAGER_CONTRACT_ID=CBXSHHMMQSNX35R6BEHBT63I2BQEJFIBLKW5NMEC4ZNR4OQDO5YGWOXY
+NEXT_PUBLIC_INVESTMENT_CAMPAIGN_WASM_HASH=ed27f0f147d633bf29f4e5e37c119b24c62fce499447b5b2ee0392e1516bf69b
+NEXT_PUBLIC_XLM_TOKEN_CONTRACT_ID=CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
 NEXT_PUBLIC_STELLAR_READ_SOURCE_ACCOUNT=GCK7A2SQAHZVIMAE3FWZLNWBUH3UQUCHBGEAOGSZOEZAYPNP3OBAFWLE
 ```
 
@@ -135,16 +139,19 @@ Live demo link: `TODO`
 
 ## Contract Addresses / IDs
 
-- CampaignFactory: `CCWOBOZBK4DMBKVZO6QEYPXMSXSY5TA66DBVVABAGHN5NUH4MBHDH5KA`
-- RefundManager: `CCGHFVCK6S67QJWYOVE6OSOVDKQUFRRY5XIDFGTITN52IYNJD3P3443E`
-- PreorderCampaign Wasm hash: `e007bdf2adc210a0121587afde1cfaf18f3b30500522d0bdf06f1324af0d36fe`
-- Demo PreorderCampaign: `CAD6TNAY6Y5PGIZCZHWXUFOYILQBZEHQ5BOSDJEB35TJ6NJNLIILSV3R`
+- CampaignFactory: `CC56AKO3H3FJS3O6C4MKJK4QTHPXLZQMUPVRVZUXRYPYMO65AD3LNVUL`
+- Escrow: `CCXUWIED3RKTFDZQH75D7BMG2N73VNNYQZSCX6KCAHIPRSPROOXTIXH7`
+- RefundManager: `CBXSHHMMQSNX35R6BEHBT63I2BQEJFIBLKW5NMEC4ZNR4OQDO5YGWOXY`
+- InvestmentCampaign Wasm hash: `ed27f0f147d633bf29f4e5e37c119b24c62fce499447b5b2ee0392e1516bf69b`
+- Demo InvestmentCampaign: `CATHURPCMY4ECYK3UDQSRZIEECQFZWGNI5R3RLBLDWHUBVU7S2VSVJEM`
 
 ## Example Transaction Hash
 
-Real campaign creation: `a612da34a5adb5d6f58b0983441723d368b2a783f02015b2981a6ba27beb704c`
+Real campaign creation: `10a187e3fc2b2e0f7b1fec4b0bd1bb88c20268f56a4fd6c3c179ed6dbd50bea6`
 
-Explorer: `https://stellar.expert/explorer/testnet/tx/a612da34a5adb5d6f58b0983441723d368b2a783f02015b2981a6ba27beb704c`
+Verified escrow investment: `1c1243c43e27c645d16348cae02ee5cc63f596f442b0502b382b8033c77f80c6`
+
+Explorer: `https://stellar.expert/explorer/testnet/tx/10a187e3fc2b2e0f7b1fec4b0bd1bb88c20268f56a4fd6c3c179ed6dbd50bea6`
 
 ## Screenshots
 
@@ -172,4 +179,4 @@ Demo video link: `TODO`
 
 - The frontend currently includes demo data fallback so the UI is reviewable before Testnet deployment.
 - Generated TypeScript bindings should be added after real contract deployment.
-- Token transfer escrow should be wired to a Stellar asset/token contract during the deployment hardening phase.
+- Campaign funds are now held by the dedicated `Escrow` contract; redeploy factory, escrow, campaign WASM, and refund manager together before retesting Testnet flows.

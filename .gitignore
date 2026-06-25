@@ -8,3 +8,6 @@ coverage/
 .env.local
 *.wasm
 .DS_Store
+dev-server*.log
+*.tsbuildinfo
+.idea/
