@@ -6,7 +6,7 @@ import { WalletStatus } from "@/features/wallet/WalletStatus";
 
 export const metadata: Metadata = {
   title: "BitStarter",
-  description: "Trustless preorders on Stellar Testnet"
+  description: "Refund-protected investment crowdfunding on Stellar Testnet"
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

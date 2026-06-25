@@ -15,13 +15,13 @@ export default async function DashboardPage() {
     error = err instanceof Error ? err.message : "Unable to load dashboard data from Stellar Testnet.";
   }
 
-  const withdrawable = campaigns.filter((campaign) => campaign.status === "Successful");
+  const withdrawable = campaigns.filter((campaign) => campaign.status === "Approved");
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-semibold">Dashboard</h1>
-        <p className="mt-2 text-slate-600">Review seller campaigns, buyer orders, refundable campaigns, and withdrawable funds.</p>
+        <p className="mt-2 text-slate-600">Review investment campaigns, refundable campaigns, and withdrawable funds.</p>
       </div>
       {error ? (
         <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
@@ -29,14 +29,14 @@ export default async function DashboardPage() {
         </div>
       ) : null}
       <section className="grid gap-4 md:grid-cols-4">
-        <Metric label="Seller campaigns" value={campaigns.length} />
-        <Metric label="Buyer orders" value={0} />
-        <Metric label="Refundable" value={0} />
+        <Metric label="Campaigns" value={campaigns.length} />
+        <Metric label="Active" value={campaigns.filter((campaign) => campaign.status === "Active").length} />
+        <Metric label="Refundable" value={campaigns.filter((campaign) => ["Rejected", "Cancelled"].includes(campaign.status)).length} />
         <Metric label="Withdrawable" value={withdrawable.length} />
       </section>
       <section className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-lg border border-line bg-white p-5">
-          <h2 className="font-semibold">Seller Campaigns</h2>
+          <h2 className="font-semibold">Investment Campaigns</h2>
           <div className="mt-4 space-y-3">
             {campaigns.length === 0 ? <p className="text-sm text-slate-600">No campaigns found on Testnet yet.</p> : null}
             {campaigns.map((campaign) => (
@@ -48,9 +48,9 @@ export default async function DashboardPage() {
           </div>
         </div>
         <div className="rounded-lg border border-line bg-white p-5">
-          <h2 className="font-semibold">Buyer Orders</h2>
+          <h2 className="font-semibold">Investor Positions</h2>
           <p className="mt-4 text-sm leading-6 text-slate-600">
-            Buyer order history now comes from campaign contracts. Connect a wallet and open a campaign to check a buyer-specific order/refund state.
+            Investor position history comes from campaign contracts. Connect a wallet and open a campaign to invest, claim refunds, or withdraw developer funds.
           </p>
         </div>
       </section>

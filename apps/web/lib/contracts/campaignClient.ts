@@ -15,27 +15,31 @@ import { createRpcClient } from "@/lib/stellar/client";
 import { stellarNetwork } from "@/lib/stellar/network";
 import { signAndSubmitTransaction } from "@/lib/stellar/transactions";
 
+const STROOPS_PER_XLM = 10_000_000;
+
 const readSourceAccount =
   process.env.NEXT_PUBLIC_STELLAR_READ_SOURCE_ACCOUNT ??
   "GCK7A2SQAHZVIMAE3FWZLNWBUH3UQUCHBGEAOGSZOEZAYPNP3OBAFWLE";
 
 type CampaignInfoNative = {
   description?: string;
-  goal_amount?: bigint | number | string;
+  funding_goal?: bigint | number | string;
   metadata_uri?: string;
-  seller?: string;
-  status?: { tag?: CampaignStatus; values?: unknown[] } | CampaignStatus;
+  developer?: string;
+  status?: { tag?: CampaignStatus; values?: unknown[] } | CampaignStatus | [CampaignStatus, ...unknown[]];
   title?: string;
-  total_raised?: bigint | number | string;
-  deadline?: bigint | number | string;
+  funding_deadline?: bigint | number | string;
+  refund_ratio?: bigint | number | string;
+  usable_ratio?: bigint | number | string;
+  voting_duration?: bigint | number | string;
 };
 
 type CampaignSummaryNative = {
   id?: string;
-  seller?: string;
+  developer?: string;
   title?: string;
-  goal_amount?: bigint | number | string;
-  deadline?: bigint | number | string;
+  funding_goal?: bigint | number | string;
+  funding_deadline?: bigint | number | string;
   metadata_uri?: string;
 };
 
@@ -52,10 +56,23 @@ function toNumber(value: bigint | number | string | undefined): number {
   return value ?? 0;
 }
 
+function stroopsToXlm(value: bigint | number | string | undefined): number {
+  return toNumber(value) / STROOPS_PER_XLM;
+}
+
+function xlmToStroops(value: number): bigint {
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new Error("Invalid XLM amount.");
+  }
+  return BigInt(Math.round(value * STROOPS_PER_XLM));
+}
+
 function statusToString(status: CampaignInfoNative["status"]): CampaignStatus {
   if (!status) return "Active";
   if (typeof status === "string") return status;
-  return status.tag ?? "Active";
+  if (Array.isArray(status) && typeof status[0] === "string") return status[0];
+  if ("tag" in status) return status.tag ?? "Active";
+  return "Active";
 }
 
 async function buildInvocation(
@@ -107,16 +124,30 @@ async function submitContractCall(
   return signAndSubmitTransaction(server, prepared.toXDR(), signerPublicKey);
 }
 
-function campaignFromInfo(id: string, fallback: Partial<Campaign>, info: CampaignInfoNative): Campaign {
+function campaignFromInfo(
+  id: string,
+  fallback: Partial<Campaign>,
+  info: CampaignInfoNative,
+  totalInvested = fallback.totalInvested ?? 0,
+  totalUsableAllocated = fallback.totalUsableAllocated ?? 0,
+  totalUsableWithdrawn = fallback.totalUsableWithdrawn ?? 0
+): Campaign {
+  const usableAvailable = Math.max(0, totalUsableAllocated - totalUsableWithdrawn);
   return {
     id,
     title: info.title ?? fallback.title ?? "Untitled campaign",
     description: info.description ?? fallback.description ?? "No description provided.",
-    seller: info.seller ?? fallback.seller ?? "",
-    goalAmount: toNumber(info.goal_amount) || fallback.goalAmount || 0,
-    totalRaised: toNumber(info.total_raised) || fallback.totalRaised || 0,
-    deadline: new Date(toNumber(info.deadline) * 1000).toISOString(),
+    developer: info.developer ?? fallback.developer ?? "",
+    goalAmount: stroopsToXlm(info.funding_goal) || fallback.goalAmount || 0,
+    totalInvested,
+    fundingDeadline: new Date(toNumber(info.funding_deadline) * 1000).toISOString(),
     metadataUri: info.metadata_uri ?? fallback.metadataUri ?? "",
+    refundRatio: toNumber(info.refund_ratio) || fallback.refundRatio || 0,
+    usableRatio: toNumber(info.usable_ratio) || fallback.usableRatio || 0,
+    totalUsableAllocated,
+    totalUsableWithdrawn,
+    usableAvailable,
+    votingDuration: toNumber(info.voting_duration) || fallback.votingDuration || 0,
     status: statusToString(info.status)
   };
 }
@@ -132,22 +163,32 @@ export async function listCampaigns(): Promise<Campaign[]> {
     summaries.map(async (summary) => {
       const id = String(summary.id ?? "");
       if (!id) throw new Error("Campaign summary is missing a contract ID.");
-      const info = await simulateContractCall<CampaignInfoNative>(id, "get_campaign_info");
+      const [info, totalInvestedStroops, totalUsableAllocatedStroops, totalUsableWithdrawnStroops] = await Promise.all([
+        simulateContractCall<CampaignInfoNative>(id, "get_campaign_info"),
+        simulateContractCall<bigint | number | string>(id, "get_total_invested"),
+        simulateContractCall<bigint | number | string>(id, "get_total_usable_allocated"),
+        simulateContractCall<bigint | number | string>(id, "get_total_usable_withdrawn")
+      ]);
       return campaignFromInfo(id, {
-        seller: summary.seller,
+        developer: summary.developer,
         title: summary.title,
-        goalAmount: toNumber(summary.goal_amount),
-        deadline: new Date(toNumber(summary.deadline) * 1000).toISOString(),
+        goalAmount: stroopsToXlm(summary.funding_goal),
+        fundingDeadline: new Date(toNumber(summary.funding_deadline) * 1000).toISOString(),
         metadataUri: summary.metadata_uri
-      }, info);
+      }, info, stroopsToXlm(totalInvestedStroops), stroopsToXlm(totalUsableAllocatedStroops), stroopsToXlm(totalUsableWithdrawnStroops));
     })
   );
 }
 
 export async function getCampaign(id: string): Promise<Campaign | null> {
   try {
-    const info = await simulateContractCall<CampaignInfoNative>(id, "get_campaign_info");
-    return campaignFromInfo(id, {}, info);
+    const [info, totalInvestedStroops, totalUsableAllocatedStroops, totalUsableWithdrawnStroops] = await Promise.all([
+      simulateContractCall<CampaignInfoNative>(id, "get_campaign_info"),
+      simulateContractCall<bigint | number | string>(id, "get_total_invested"),
+      simulateContractCall<bigint | number | string>(id, "get_total_usable_allocated"),
+      simulateContractCall<bigint | number | string>(id, "get_total_usable_withdrawn")
+    ]);
+    return campaignFromInfo(id, {}, info, stroopsToXlm(totalInvestedStroops), stroopsToXlm(totalUsableAllocatedStroops), stroopsToXlm(totalUsableWithdrawnStroops));
   } catch {
     return null;
   }
@@ -160,29 +201,33 @@ export async function createCampaign(
   if (!signer) throw new Error("Connect Freighter before creating a campaign.");
 
   const deadlineSeconds = Math.floor(new Date(input.deadline).getTime() / 1000);
+  const votingDurationSeconds = Math.round(input.votingDurationDays * 24 * 60 * 60);
   const result = await submitContractCall(requireFactoryContractId(), "create_campaign", signer, [
     Address.fromString(signer).toScVal(),
     nativeToScVal(input.title, { type: "string" }),
     nativeToScVal(input.description, { type: "string" }),
-    nativeToScVal(BigInt(Math.trunc(input.goalAmount)), { type: "i128" }),
+    nativeToScVal(input.metadataUri, { type: "string" }),
+    nativeToScVal(xlmToStroops(input.goalAmount), { type: "i128" }),
     nativeToScVal(BigInt(deadlineSeconds), { type: "u64" }),
-    nativeToScVal(input.metadataUri, { type: "string" })
+    nativeToScVal(input.refundRatio, { type: "u32" }),
+    nativeToScVal(input.usableRatio, { type: "u32" }),
+    nativeToScVal(BigInt(votingDurationSeconds), { type: "u64" })
   ]);
 
   return {
     transactionHash: result.hash,
-    campaignId: result.hash
+    campaignId: typeof result.returnValue === "string" ? result.returnValue : ""
   };
 }
 
-export async function placePreorder(campaignId: string, amount: number): Promise<{ transactionHash: string }> {
-  if (amount <= 0) throw new Error("Invalid preorder amount.");
+export async function invest(campaignId: string, amount: number): Promise<{ transactionHash: string }> {
+  if (!Number.isFinite(amount) || amount <= 0) throw new Error("Invalid investment amount.");
   const signer = (await getAddress()).address;
-  if (!signer) throw new Error("Connect Freighter before placing a preorder.");
+  if (!signer) throw new Error("Connect Freighter before investing.");
 
-  const result = await submitContractCall(campaignId, "place_order", signer, [
+  const result = await submitContractCall(campaignId, "invest", signer, [
     Address.fromString(signer).toScVal(),
-    nativeToScVal(BigInt(Math.trunc(amount)), { type: "i128" })
+    nativeToScVal(xlmToStroops(amount), { type: "i128" })
   ]);
   return { transactionHash: result.hash };
 }
@@ -198,11 +243,23 @@ export async function claimRefund(campaignId: string): Promise<{ transactionHash
   return { transactionHash: result.hash };
 }
 
-export async function withdrawFunds(campaignId: string): Promise<{ transactionHash: string }> {
+export async function withdrawAvailableFunds(campaignId: string, amount: number): Promise<{ transactionHash: string }> {
+  if (!Number.isFinite(amount) || amount <= 0) throw new Error("Invalid withdrawal amount.");
   const signer = (await getAddress()).address;
   if (!signer) throw new Error("Connect Freighter before withdrawing funds.");
 
-  const result = await submitContractCall(campaignId, "withdraw_funds", signer, [
+  const result = await submitContractCall(campaignId, "withdraw_available_funds", signer, [
+    Address.fromString(signer).toScVal(),
+    nativeToScVal(xlmToStroops(amount), { type: "i128" })
+  ]);
+  return { transactionHash: result.hash };
+}
+
+export async function withdrawRemainingFunds(campaignId: string): Promise<{ transactionHash: string }> {
+  const signer = (await getAddress()).address;
+  if (!signer) throw new Error("Connect Freighter before withdrawing remaining funds.");
+
+  const result = await submitContractCall(campaignId, "withdraw_remaining_funds", signer, [
     Address.fromString(signer).toScVal()
   ]);
   return { transactionHash: result.hash };

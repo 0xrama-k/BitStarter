@@ -8,11 +8,14 @@ describe("CampaignCard", () => {
       id: "CCAMPAIGN",
       title: "Open Source AI Course",
       description: "A real Testnet campaign.",
-      seller: "GSELLER",
+      developer: "GDEVELOPER",
       goalAmount: 1200,
-      totalRaised: 875,
-      deadline: "2027-01-01T00:00:00.000Z",
+      totalInvested: 875,
+      fundingDeadline: "2027-01-01T00:00:00.000Z",
       metadataUri: "ipfs://course",
+      refundRatio: 60,
+      usableRatio: 40,
+      votingDuration: 604800,
       status: "Active"
     }} />);
 

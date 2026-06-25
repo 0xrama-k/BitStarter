@@ -6,17 +6,17 @@ import { ActivityFeed } from "@/features/realtime/ActivityFeed";
 const steps: { title: string; text: string; Icon: LucideIcon }[] = [
   {
     title: "Create",
-    text: "Sellers launch a preorder campaign with a funding goal and deadline.",
+    text: "Developers launch an investment campaign with funding, reserve, and voting settings.",
     Icon: ShieldCheck
   },
   {
     title: "Escrow",
-    text: "Buyers place preorders while the contract tracks contributions.",
+    text: "Investors fund campaigns while the contract splits usable funds and protected reserves.",
     Icon: WalletCards
   },
   {
     title: "Settle",
-    text: "Successful sellers withdraw; failed campaigns unlock buyer refunds.",
+    text: "Capital-weighted voting approves final withdrawal or unlocks protected refunds.",
     Icon: TimerReset
   }
 ];
@@ -26,12 +26,12 @@ export default function HomePage() {
     <div className="space-y-10">
       <section className="grid gap-8 py-6 md:grid-cols-[1.35fr_0.65fr] md:items-center">
         <div>
-          <p className="text-sm font-semibold uppercase text-accent">Stellar Testnet escrow</p>
+          <p className="text-sm font-semibold uppercase text-accent">Stellar Testnet crowdfunding</p>
           <h1 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight md:text-6xl">
-            Trustless preorders for digital launches.
+            Refund-protected funding for software launches.
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-            BitStarter uses Stellar/Soroban smart contracts to lock preorder funds until a campaign reaches its goal. If a launch fails or is cancelled, buyers claim refunds directly.
+            BitStarter uses Stellar/Soroban smart contracts to split each investment into developer-usable funds and a protected refund reserve.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link href="/campaigns/new" className="inline-flex items-center gap-2 rounded-md bg-ink px-5 py-3 text-sm font-medium text-white">

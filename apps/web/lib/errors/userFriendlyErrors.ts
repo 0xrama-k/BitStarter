@@ -9,5 +9,6 @@ export const userFriendlyErrors: Record<string, string> = {
   rpc_unavailable: "Stellar RPC is unavailable. Try again in a moment.",
   campaign_not_found: "Campaign not found.",
   refund_not_available: "Refund is not available for this campaign.",
-  withdraw_not_allowed: "Withdraw is only available after the funding goal is reached."
+  withdraw_not_allowed: "Withdrawal is only available for the current campaign status and available balance.",
+  amount_exceeds_remaining: "Investment amount cannot exceed the remaining campaign goal."
 };

@@ -31,7 +31,7 @@ describe("CreateCampaignForm", () => {
     render(<CreateCampaignForm />);
 
     await userEvent.type(screen.getByLabelText("Title"), "Launch Toolkit");
-    await userEvent.type(screen.getByLabelText("Description"), "A useful preorder campaign.");
+    await userEvent.type(screen.getByLabelText("Description"), "A useful investment campaign.");
     await userEvent.type(screen.getByLabelText("Goal amount, XLM"), "100");
     await userEvent.type(screen.getByLabelText("Deadline"), "2027-01-01T10:00");
     await userEvent.type(screen.getByLabelText("Metadata URI"), "ipfs://launch-toolkit");

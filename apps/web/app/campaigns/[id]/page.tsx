@@ -11,7 +11,7 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
   const campaign = await getCampaign(decodeURIComponent(id));
   if (!campaign) notFound();
 
-  const progress = Math.min(100, Math.round((campaign.totalRaised / campaign.goalAmount) * 100));
+  const progress = Math.min(100, Math.round((campaign.totalInvested / campaign.goalAmount) * 100));
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
@@ -29,7 +29,7 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
         <dl className="mt-6 grid gap-4 sm:grid-cols-2">
           <div>
             <dt className="text-sm text-slate-500">Raised</dt>
-            <dd className="text-xl font-semibold">{campaign.totalRaised} XLM</dd>
+            <dd className="text-xl font-semibold">{campaign.totalInvested} XLM</dd>
           </div>
           <div>
             <dt className="text-sm text-slate-500">Goal</dt>
@@ -37,11 +37,19 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
           </div>
           <div>
             <dt className="text-sm text-slate-500">Deadline</dt>
-            <dd>{new Date(campaign.deadline).toLocaleString()}</dd>
+            <dd>{new Date(campaign.fundingDeadline).toLocaleString()}</dd>
           </div>
           <div>
-            <dt className="text-sm text-slate-500">Seller</dt>
-            <dd className="truncate font-mono text-sm">{campaign.seller}</dd>
+            <dt className="text-sm text-slate-500">Developer</dt>
+            <dd className="truncate font-mono text-sm">{campaign.developer}</dd>
+          </div>
+          <div>
+            <dt className="text-sm text-slate-500">Refund reserve</dt>
+            <dd>{campaign.refundRatio}%</dd>
+          </div>
+          <div>
+            <dt className="text-sm text-slate-500">Developer usable</dt>
+            <dd>{campaign.usableRatio}%</dd>
           </div>
         </dl>
         <CampaignActions campaign={campaign} />

@@ -13,7 +13,10 @@ const emptyForm: CreateCampaignInput = {
   description: "",
   goalAmount: 0,
   deadline: "",
-  metadataUri: ""
+  metadataUri: "",
+  refundRatio: 60,
+  usableRatio: 40,
+  votingDurationDays: 7
 };
 
 export function CreateCampaignForm() {
@@ -42,7 +45,11 @@ export function CreateCampaignForm() {
     setLoading(true);
     try {
       const response = await createCampaign(parsed.data);
-      setResult(`Campaign created. Transaction hash: ${response.transactionHash}`);
+      setResult(
+        response.campaignId
+          ? `Campaign created: ${response.campaignId}. Transaction hash: ${response.transactionHash}`
+          : `Campaign created. Transaction hash: ${response.transactionHash}`
+      );
       router.refresh();
     } catch (error) {
       setSubmitError(parseStellarError(error));
@@ -79,6 +86,23 @@ export function CreateCampaignForm() {
         <label className="block text-sm font-medium" htmlFor="metadataUri">Metadata URI</label>
         <input id="metadataUri" value={form.metadataUri} onChange={(event) => update("metadataUri", event.target.value)} className="mt-2 min-h-11 w-full rounded-md border border-line px-3" />
         <FieldError>{errors.metadataUri}</FieldError>
+      </div>
+      <div className="grid gap-5 sm:grid-cols-3">
+        <div>
+          <label className="block text-sm font-medium" htmlFor="refundRatio">Refund reserve, %</label>
+          <input id="refundRatio" type="number" min="0" max="100" value={form.refundRatio} onChange={(event) => update("refundRatio", Number(event.target.value))} className="mt-2 min-h-11 w-full rounded-md border border-line px-3" />
+          <FieldError>{errors.refundRatio}</FieldError>
+        </div>
+        <div>
+          <label className="block text-sm font-medium" htmlFor="usableRatio">Developer usable, %</label>
+          <input id="usableRatio" type="number" min="0" max="100" value={form.usableRatio} onChange={(event) => update("usableRatio", Number(event.target.value))} className="mt-2 min-h-11 w-full rounded-md border border-line px-3" />
+          <FieldError>{errors.usableRatio}</FieldError>
+        </div>
+        <div>
+          <label className="block text-sm font-medium" htmlFor="votingDurationDays">Voting duration, days</label>
+          <input id="votingDurationDays" type="number" min="1" step="1" value={form.votingDurationDays} onChange={(event) => update("votingDurationDays", Number(event.target.value))} className="mt-2 min-h-11 w-full rounded-md border border-line px-3" />
+          <FieldError>{errors.votingDurationDays}</FieldError>
+        </div>
       </div>
       <button disabled={loading} className="rounded-md bg-ink px-5 py-3 text-sm font-medium text-white disabled:opacity-60">
         {loading ? "Creating campaign..." : "Create campaign"}

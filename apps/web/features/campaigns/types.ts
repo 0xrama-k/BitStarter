@@ -1,14 +1,20 @@
-export type CampaignStatus = "Active" | "Successful" | "Failed" | "Withdrawn" | "Cancelled";
+export type CampaignStatus = "Active" | "VotingOpen" | "Approved" | "Rejected" | "Cancelled";
 
 export type Campaign = {
   id: string;
   title: string;
   description: string;
-  seller: string;
+  developer: string;
   goalAmount: number;
-  totalRaised: number;
-  deadline: string;
+  totalInvested: number;
+  fundingDeadline: string;
   metadataUri: string;
+  refundRatio: number;
+  usableRatio: number;
+  totalUsableAllocated?: number;
+  totalUsableWithdrawn?: number;
+  usableAvailable?: number;
+  votingDuration: number;
   status: CampaignStatus;
 };
 

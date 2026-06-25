@@ -3,7 +3,7 @@ import type { Campaign } from "./types";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 
 export function CampaignCard({ campaign }: { campaign: Campaign }) {
-  const progress = Math.min(100, Math.round((campaign.totalRaised / campaign.goalAmount) * 100));
+  const progress = Math.min(100, Math.round((campaign.totalInvested / campaign.goalAmount) * 100));
 
   return (
     <article className="rounded-lg border border-line bg-white p-5 shadow-sm">
@@ -20,15 +20,15 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
       <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
         <div>
           <dt className="text-slate-500">Raised</dt>
-          <dd className="font-medium">{campaign.totalRaised} / {campaign.goalAmount} XLM</dd>
+          <dd className="font-medium">{campaign.totalInvested} / {campaign.goalAmount} XLM</dd>
         </div>
         <div>
           <dt className="text-slate-500">Deadline</dt>
-          <dd className="font-medium">{new Date(campaign.deadline).toLocaleDateString()}</dd>
+          <dd className="font-medium">{new Date(campaign.fundingDeadline).toLocaleDateString()}</dd>
         </div>
         <div className="col-span-2">
-          <dt className="text-slate-500">Seller</dt>
-          <dd className="truncate font-mono text-xs">{campaign.seller}</dd>
+          <dt className="text-slate-500">Developer</dt>
+          <dd className="truncate font-mono text-xs">{campaign.developer}</dd>
         </div>
       </dl>
       <Link href={`/campaigns/${encodeURIComponent(campaign.id)}`} className="mt-5 inline-flex rounded-md bg-ink px-4 py-2 text-sm font-medium text-white">

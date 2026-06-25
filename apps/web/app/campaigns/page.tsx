@@ -18,7 +18,7 @@ export default async function CampaignsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-semibold">Explore Campaigns</h1>
-        <p className="mt-2 text-slate-600">Browse Stellar Testnet preorder campaigns and funding status.</p>
+        <p className="mt-2 text-slate-600">Browse Stellar Testnet investment campaigns and funding status.</p>
       </div>
       {error ? (
         <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
