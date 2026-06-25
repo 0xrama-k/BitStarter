@@ -228,7 +228,8 @@ name = "campaign-factory"
 version = "0.1.0"
 dependencies = [
  "bitstarter-shared",
- "preorder-campaign",
+ "escrow",
+ "investment-campaign",
  "soroban-sdk",
 ]
 
@@ -598,6 +599,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2bfcf67fea2815c2fc3b90873fae90957be12ff417335dfadc7f52927feb03b2"
 
 [[package]]
+name = "escrow"
+version = "0.1.0"
+dependencies = [
+ "bitstarter-shared",
+ "soroban-sdk",
+]
+
+[[package]]
 name = "ethnum"
 version = "1.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -820,6 +829,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8e04e2fd2b8188ea827b32ef11de88377086d690286ab35747ef7f9bf3ccb590"
 
 [[package]]
+name = "investment-campaign"
+version = "0.1.0"
+dependencies = [
+ "bitstarter-shared",
+ "escrow",
+ "soroban-sdk",
+]
+
+[[package]]
 name = "itertools"
 version = "0.10.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1002,14 +1020,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "preorder-campaign"
-version = "0.1.0"
-dependencies = [
- "bitstarter-shared",
- "soroban-sdk",
-]
-
-[[package]]
 name = "prettyplease"
 version = "0.2.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1101,7 +1111,8 @@ name = "refund-manager"
 version = "0.1.0"
 dependencies = [
  "bitstarter-shared",
- "preorder-campaign",
+ "escrow",
+ "investment-campaign",
  "soroban-sdk",
 ]
 

@@ -2,8 +2,9 @@
 resolver = "2"
 members = [
   "contracts/shared",
+  "contracts/escrow",
   "contracts/campaign_factory",
-  "contracts/preorder_campaign",
+  "contracts/investment_campaign",
   "contracts/refund_manager",
 ]
 

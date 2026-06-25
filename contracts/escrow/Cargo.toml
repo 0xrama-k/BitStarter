@@ -1,5 +1,5 @@
 [package]
-name = "refund-manager"
+name = "escrow"
 version = "0.1.0"
 edition.workspace = true
 license.workspace = true
@@ -10,8 +10,6 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 soroban-sdk.workspace = true
 bitstarter-shared.workspace = true
-investment-campaign = { path = "../investment_campaign" }
 
 [dev-dependencies]
 soroban-sdk = { workspace = true, features = ["testutils"] }
-escrow = { path = "../escrow" }
