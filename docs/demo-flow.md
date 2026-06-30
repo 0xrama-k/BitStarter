@@ -1,6 +1,6 @@
 # Demo Flow
 
-1. Open the Vercel URL.
+1. Open the Netlify URL.
 2. Connect a Stellar Testnet wallet.
 3. Create an investment campaign.
 4. Open the campaign list and show the campaign.

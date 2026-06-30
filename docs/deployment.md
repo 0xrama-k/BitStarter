@@ -24,9 +24,9 @@ STELLAR_SOURCE=bitstarter-deployer ./scripts/deploy/deploy-testnet.sh
 
 5. Copy the printed contract IDs into `apps/web/.env.local`.
 
-## Vercel
+## Netlify
 
-Import the GitHub repository and set the project root to `apps/web`.
+Import the GitHub repository into Netlify. The root `netlify.toml` configures the web app build from `apps/web`.
 
 - Build command: `npm run build`
 - Install command: `npm install`
@@ -40,6 +40,7 @@ Environment variables:
 - `NEXT_PUBLIC_ESCROW_CONTRACT_ID`
 - `NEXT_PUBLIC_REFUND_MANAGER_CONTRACT_ID`
 - `NEXT_PUBLIC_INVESTMENT_CAMPAIGN_WASM_HASH`
+- `NEXT_PUBLIC_XLM_TOKEN_CONTRACT_ID`
 - `NEXT_PUBLIC_STELLAR_READ_SOURCE_ACCOUNT`
 
 ## Current Testnet Deployment

@@ -1,6 +1,6 @@
 # Architecture
 
-BitStarter is a monorepo with Soroban contracts and a Vercel-ready Next.js app.
+BitStarter is a monorepo with Soroban contracts and a Netlify-ready Next.js app.
 
 The contract layer is split into:
 
@@ -11,4 +11,4 @@ The contract layer is split into:
 
 The frontend isolates Stellar access in `apps/web/lib/stellar` and contract-facing methods in `apps/web/lib/contracts`. UI pages consume those abstractions instead of constructing blockchain calls directly.
 
-Realtime updates are handled through `apps/web/features/realtime`. The current implementation uses a polling abstraction so it can run reliably on Vercel. The same parser can be wired to Stellar RPC event responses after contract IDs are deployed.
+Realtime updates are handled through `apps/web/features/realtime`. The current implementation uses a polling abstraction so it can run reliably on serverless hosting. The same parser can be wired to Stellar RPC event responses after contract IDs are deployed.
