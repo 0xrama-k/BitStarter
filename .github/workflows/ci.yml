@@ -65,11 +65,11 @@ jobs:
       - name: Cache Cargo registry and build output
         uses: Swatinem/rust-cache@v2
 
-      - name: Run contract tests
-        run: cargo test --workspace
-
       - name: Build contract WASM artifacts
         run: cargo build --workspace --target wasm32v1-none --release
+
+      - name: Run contract tests
+        run: cargo test --workspace
 
   deploy:
     name: Deploy web to Netlify
