@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CampaignActions } from "@/features/campaigns/CampaignActions";
 import { invest } from "@/lib/contracts/campaignClient";
 
@@ -34,6 +34,13 @@ const campaign = {
 };
 
 describe("CampaignActions", () => {
+  beforeEach(() => {
+    refresh.mockClear();
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    vi.mocked(invest).mockRejectedValue(new Error("Transaction failed"));
+  });
+
   it("shows an error message on failed transaction", async () => {
     render(<CampaignActions campaign={campaign} />);
 
@@ -50,5 +57,33 @@ describe("CampaignActions", () => {
 
     expect(await screen.findByText(/real-testnet-hash/)).toBeInTheDocument();
     expect(refresh).toHaveBeenCalledOnce();
+  });
+
+  it("hides withdrawal buttons when the connected wallet is not the campaign creator", () => {
+    window.sessionStorage.setItem("bitstarter.walletSession", JSON.stringify({
+      publicKey: "GINVESTOR",
+      connected: true,
+      providerId: "freighter",
+      providerName: "Freighter"
+    }));
+
+    render(<CampaignActions campaign={campaign} />);
+
+    expect(screen.queryByRole("button", { name: "Withdraw usable funds" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Withdraw remaining funds" })).not.toBeInTheDocument();
+  });
+
+  it("shows withdrawal buttons when the connected wallet is the campaign creator", async () => {
+    window.sessionStorage.setItem("bitstarter.walletSession", JSON.stringify({
+      publicKey: "gdeveloper",
+      connected: true,
+      providerId: "freighter",
+      providerName: "Freighter"
+    }));
+
+    render(<CampaignActions campaign={campaign} />);
+
+    expect(await screen.findByRole("button", { name: "Withdraw usable funds" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Withdraw remaining funds" })).toBeInTheDocument();
   });
 });

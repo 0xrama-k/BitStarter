@@ -4,8 +4,11 @@ import { Check, ChevronDown, LogOut, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   connectWallet,
+  clearStoredWalletSession,
   defaultWalletProviderId,
   getWalletProvider,
+  readStoredWalletSession,
+  writeStoredWalletSession,
   walletProviders,
   type WalletProviderId,
   type WalletSession
@@ -30,6 +33,7 @@ export function WalletStatus() {
     if (isWalletProviderId(storedProviderId)) {
       setProviderId(storedProviderId);
     }
+    setSession(readStoredWalletSession());
   }, []);
 
   async function handleConnect(nextProviderId = providerId) {
@@ -40,9 +44,11 @@ export function WalletStatus() {
       setSession(nextSession);
       setProviderId(nextProviderId);
       window.localStorage.setItem(providerStorageKey, nextProviderId);
+      writeStoredWalletSession(nextSession);
       setOpen(false);
     } catch (err) {
       setSession(null);
+      clearStoredWalletSession();
       setError(err instanceof Error ? err.message : "Wallet connection failed.");
     } finally {
       setLoading(false);
@@ -53,11 +59,13 @@ export function WalletStatus() {
     setProviderId(nextProviderId);
     window.localStorage.setItem(providerStorageKey, nextProviderId);
     setSession(null);
+    clearStoredWalletSession();
     setError("");
   }
 
   function handleDisconnect() {
     setSession(null);
+    clearStoredWalletSession();
     setError("");
     setOpen(false);
   }
@@ -71,12 +79,12 @@ export function WalletStatus() {
 
   return (
     <div className="relative">
-      <div className="flex overflow-hidden rounded-md border border-line bg-white">
+      <div className="flex overflow-hidden rounded-md border border-line bg-paper">
         <button
           type="button"
           onClick={() => session?.connected ? setOpen((current) => !current) : handleConnect()}
           disabled={loading}
-          className="inline-flex min-h-10 items-center gap-2 px-3 text-sm disabled:opacity-60"
+          className="inline-flex min-h-10 items-center gap-2 px-3 text-sm font-medium disabled:opacity-60"
           title={session?.connected ? "Wallet connected" : `Connect ${provider.name}`}
         >
           <Wallet size={16} aria-hidden="true" />
@@ -94,7 +102,7 @@ export function WalletStatus() {
       </div>
 
       {open ? (
-        <div className="absolute right-0 z-20 mt-2 w-72 rounded-lg border border-line bg-white p-2 text-sm shadow-lg">
+        <div className="absolute right-0 z-20 mt-2 w-72 rounded-md border border-line bg-paper p-2 text-sm shadow-[6px_6px_0_#d9d4c9]">
           <div className="px-2 py-2 text-xs font-semibold uppercase text-slate-500">Wallet provider</div>
           <div className="space-y-1">
             {walletProviders.map((option) => (
@@ -102,7 +110,7 @@ export function WalletStatus() {
                 key={option.id}
                 type="button"
                 onClick={() => handleSelectProvider(option.id)}
-                className="flex w-full items-start gap-3 rounded-md px-2 py-2 text-left hover:bg-panel"
+                className="flex w-full items-start gap-3 rounded-md px-2 py-2 text-left hover:bg-white"
               >
                 <span className="mt-0.5 flex h-4 w-4 items-center justify-center">
                   {providerId === option.id ? <Check size={16} className="text-accent" aria-hidden="true" /> : null}
@@ -119,7 +127,7 @@ export function WalletStatus() {
               type="button"
               onClick={() => handleConnect()}
               disabled={loading}
-              className="w-full rounded-md bg-ink px-3 py-2 text-left text-sm font-medium text-white disabled:opacity-60"
+              className="w-full rounded-md bg-ink px-3 py-2 text-left text-sm font-semibold text-white disabled:opacity-60"
             >
               {loading ? "Connecting..." : `Connect ${provider.name}`}
             </button>

@@ -15,6 +15,9 @@ export type WalletSession = {
   providerName: string;
 };
 
+export const walletSessionStorageKey = "bitstarter.walletSession";
+export const walletSessionChangedEvent = "bitstarter:wallet-session-changed";
+
 type BrowserWallets = typeof globalThis & {
   freighterApi?: FreighterApi;
   freighter?: FreighterApi;
@@ -55,6 +58,41 @@ export const defaultWalletProviderId: WalletProviderId = "freighter";
 
 export function getWalletProvider(providerId: WalletProviderId): WalletProvider {
   return walletProviders.find((provider) => provider.id === providerId) ?? walletProviders[0];
+}
+
+function isWalletSession(value: unknown): value is WalletSession {
+  if (!value || typeof value !== "object") return false;
+  const session = value as Partial<WalletSession>;
+  return (
+    typeof session.publicKey === "string" &&
+    session.publicKey.length > 0 &&
+    session.connected === true &&
+    typeof session.providerId === "string" &&
+    typeof session.providerName === "string"
+  );
+}
+
+export function readStoredWalletSession(): WalletSession | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const stored = window.sessionStorage.getItem(walletSessionStorageKey);
+    if (!stored) return null;
+    const parsed: unknown = JSON.parse(stored);
+    return isWalletSession(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function writeStoredWalletSession(session: WalletSession) {
+  window.sessionStorage.setItem(walletSessionStorageKey, JSON.stringify(session));
+  window.dispatchEvent(new Event(walletSessionChangedEvent));
+}
+
+export function clearStoredWalletSession() {
+  window.sessionStorage.removeItem(walletSessionStorageKey);
+  window.dispatchEvent(new Event(walletSessionChangedEvent));
 }
 
 function sleep(milliseconds: number) {

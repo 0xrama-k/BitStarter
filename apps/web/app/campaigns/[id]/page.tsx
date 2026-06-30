@@ -15,41 +15,42 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-      <section className="rounded-lg border border-line bg-white p-6">
+      <section className="rounded-md border border-line bg-paper p-6 shadow-[6px_6px_0_#d9d4c9]">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-semibold">{campaign.title}</h1>
-            <p className="mt-3 max-w-3xl leading-7 text-slate-600">{campaign.description}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-accent">Campaign detail</p>
+            <h1 className="mt-2 text-4xl font-semibold leading-tight">{campaign.title}</h1>
+            <p className="mt-3 max-w-3xl leading-7 text-slate-700">{campaign.description}</p>
           </div>
-          <StatusBadge status={campaign.status} />
+          <StatusBadge status={campaign.status} totalInvested={campaign.totalInvested} goalAmount={campaign.goalAmount} />
         </div>
-        <div className="mt-8 h-3 rounded-full bg-slate-200">
-          <div className="h-3 rounded-full bg-accent" style={{ width: `${progress}%` }} />
+        <div className="mt-8 h-3.5 rounded-full border border-line bg-panel p-0.5">
+          <div className="h-full rounded-full bg-accent" style={{ width: `${progress}%` }} />
         </div>
         <dl className="mt-6 grid gap-4 sm:grid-cols-2">
-          <div>
+          <div className="rounded-md border border-line bg-panel p-4">
             <dt className="text-sm text-slate-500">Raised</dt>
-            <dd className="text-xl font-semibold">{campaign.totalInvested} XLM</dd>
+            <dd className="mt-1 text-xl font-semibold">{campaign.totalInvested} XLM</dd>
           </div>
-          <div>
+          <div className="rounded-md border border-line bg-panel p-4">
             <dt className="text-sm text-slate-500">Goal</dt>
-            <dd className="text-xl font-semibold">{campaign.goalAmount} XLM</dd>
+            <dd className="mt-1 text-xl font-semibold">{campaign.goalAmount} XLM</dd>
           </div>
-          <div>
+          <div className="rounded-md border border-line bg-panel p-4">
             <dt className="text-sm text-slate-500">Deadline</dt>
-            <dd>{new Date(campaign.fundingDeadline).toLocaleString()}</dd>
+            <dd className="mt-1 font-medium">{new Date(campaign.fundingDeadline).toLocaleString()}</dd>
           </div>
-          <div>
+          <div className="rounded-md border border-line bg-panel p-4">
             <dt className="text-sm text-slate-500">Developer</dt>
-            <dd className="truncate font-mono text-sm">{campaign.developer}</dd>
+            <dd className="mt-1 truncate font-mono text-sm">{campaign.developer}</dd>
           </div>
-          <div>
+          <div className="rounded-md border border-line bg-panel p-4">
             <dt className="text-sm text-slate-500">Refund reserve</dt>
-            <dd>{campaign.refundRatio}%</dd>
+            <dd className="mt-1 font-medium">{campaign.refundRatio}%</dd>
           </div>
-          <div>
+          <div className="rounded-md border border-line bg-panel p-4">
             <dt className="text-sm text-slate-500">Developer usable</dt>
-            <dd>{campaign.usableRatio}%</dd>
+            <dd className="mt-1 font-medium">{campaign.usableRatio}%</dd>
           </div>
         </dl>
         <CampaignActions campaign={campaign} />

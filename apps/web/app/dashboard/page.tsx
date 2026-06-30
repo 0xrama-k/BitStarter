@@ -19,12 +19,13 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-semibold">Dashboard</h1>
-        <p className="mt-2 text-slate-600">Review investment campaigns, refundable campaigns, and withdrawable funds.</p>
+      <div className="border-b border-line pb-5">
+        <p className="text-xs font-semibold uppercase tracking-wide text-accent">Operator view</p>
+        <h1 className="mt-2 text-4xl font-semibold">Dashboard</h1>
+        <p className="mt-2 text-slate-700">Review investment campaigns, refundable campaigns, and withdrawable funds.</p>
       </div>
       {error ? (
-        <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
+        <div role="alert" className="rounded-md border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
           {error}
         </div>
       ) : null}
@@ -35,21 +36,21 @@ export default async function DashboardPage() {
         <Metric label="Withdrawable" value={withdrawable.length} />
       </section>
       <section className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-lg border border-line bg-white p-5">
-          <h2 className="font-semibold">Investment Campaigns</h2>
+        <div className="rounded-md border border-line bg-paper p-5 shadow-[0_1px_0_rgba(17,20,22,0.06)]">
+          <h2 className="text-lg font-semibold">Investment Campaigns</h2>
           <div className="mt-4 space-y-3">
             {campaigns.length === 0 ? <p className="text-sm text-slate-600">No campaigns found on Testnet yet.</p> : null}
             {campaigns.map((campaign) => (
-              <Link key={campaign.id} href={`/campaigns/${encodeURIComponent(campaign.id)}`} className="flex items-center justify-between gap-3 rounded-md border border-line p-3">
+              <Link key={campaign.id} href={`/campaigns/${encodeURIComponent(campaign.id)}`} className="flex items-center justify-between gap-3 rounded-md border border-line bg-panel p-3 transition hover:border-ink">
                 <span className="font-medium">{campaign.title}</span>
-                <StatusBadge status={campaign.status} />
+                <StatusBadge status={campaign.status} totalInvested={campaign.totalInvested} goalAmount={campaign.goalAmount} />
               </Link>
             ))}
           </div>
         </div>
-        <div className="rounded-lg border border-line bg-white p-5">
-          <h2 className="font-semibold">Investor Positions</h2>
-          <p className="mt-4 text-sm leading-6 text-slate-600">
+        <div className="rounded-md border border-line bg-paper p-5 shadow-[0_1px_0_rgba(17,20,22,0.06)]">
+          <h2 className="text-lg font-semibold">Investor Positions</h2>
+          <p className="mt-4 text-sm leading-6 text-slate-700">
             Investor position history comes from campaign contracts. Connect a wallet and open a campaign to invest, claim refunds, or withdraw developer funds.
           </p>
         </div>
@@ -60,7 +61,7 @@ export default async function DashboardPage() {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg border border-line bg-white p-5">
+    <div className="rounded-md border border-line bg-paper p-5 shadow-[0_1px_0_rgba(17,20,22,0.06)]">
       <p className="text-sm text-slate-500">{label}</p>
       <p className="mt-2 text-3xl font-semibold">{value}</p>
     </div>
