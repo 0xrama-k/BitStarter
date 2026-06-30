@@ -1,5 +1,13 @@
 # BitStarter
 
+## Links
+
+- **Live demo:** https://stellar-bitstarter.netlify.app/
+- **GitHub repository:** https://github.com/0xrama-k/BitStarter
+- **Demo video (1–2 min):** https://drive.google.com/file/d/1Y_VHg54y4QrUG2sWMtAZnztcPTkBQ6qU/view?usp=sharing
+- **CampaignFactory contract:** [`CC56AKO3H3FJS3O6C4MKJK4QTHPXLZQMUPVRVZUXRYPYMO65AD3LNVUL`](https://stellar.expert/explorer/testnet/contract/CC56AKO3H3FJS3O6C4MKJK4QTHPXLZQMUPVRVZUXRYPYMO65AD3LNVUL)
+- **Example invest transaction:** [`1c1243c43e27c645d16348cae02ee5cc63f596f442b0502b382b8033c77f80c6`](https://stellar.expert/explorer/testnet/tx/1c1243c43e27c645d16348cae02ee5cc63f596f442b0502b382b8033c77f80c6)
+
 ## Overview
 
 BitStarter is a Stellar/Soroban crowdfunding app for refund-protected software investment campaigns. Campaign creators define a funding goal, deadline, refund reserve, usable-funds share, and voting duration. Investors fund campaigns on Stellar Testnet, while each investment is split between developer-usable funds and a protected reserve.
@@ -130,8 +138,8 @@ Do not expose deployer private keys with `NEXT_PUBLIC_`.
 ## Local Setup
 
 ```bash
-git clone https://github.com/your-org/bitstarter.git
-cd bitstarter/apps/web
+git clone https://github.com/0xrama-k/BitStarter.git
+cd BitStarter/apps/web
 npm install
 cp .env.example .env.local
 npm run dev
@@ -194,7 +202,35 @@ https://stellar.expert/explorer/testnet/tx/10a187e3fc2b2e0f7b1fec4b0bd1bb88c2026
 4. Set the environment variables listed above.
 5. Deploy.
 
-Live demo link: `TODO`
+Live demo link: https://stellar-bitstarter.netlify.app/
+
+## Screenshots
+
+### Mobile responsive UI
+
+<p>
+  <img src="images/mobile_responsive_ui/photo_1_2026-07-01_00-14-54.jpg" width="220" alt="Mobile responsive UI 1" />
+  <img src="images/mobile_responsive_ui/photo_2_2026-07-01_00-14-54.jpg" width="220" alt="Mobile responsive UI 2" />
+  <img src="images/mobile_responsive_ui/photo_3_2026-07-01_00-14-54.jpg" width="220" alt="Mobile responsive UI 3" />
+  <img src="images/mobile_responsive_ui/photo_4_2026-07-01_00-14-54.jpg" width="220" alt="Mobile responsive UI 4" />
+</p>
+
+### CI/CD pipeline running
+
+![CI summary](images/ci_pipeline/summary.png)
+![Frontend tests and build job](images/ci_pipeline/frontend_test_build.png)
+![Contract tests and WASM build job](images/ci_pipeline/contract_tests_and_wasm_build.png)
+
+### Test output (3+ passing tests)
+
+Contract tests (14 passing across the workspace):
+
+![Contract tests](images/test_output/contract_tests.png)
+![Contract tests continued](images/test_output/contract_tests2.png)
+
+Frontend tests (Vitest):
+
+![Frontend tests](images/test_output/frontend_tests.png)
 
 ## Remaining TODO
 
@@ -204,10 +240,6 @@ Live demo link: `TODO`
 - Add clearer transaction lifecycle UX: pending, submitted, confirmed, failed, and explorer links for each successful transaction.
 - Add generated TypeScript bindings or another typed contract client layer to reduce manual ScVal/native conversion code in `campaignClient.ts`.
 - Add end-to-end tests against a local or Testnet-like Soroban environment for full create/invest/vote/finalize/refund flows.
-- Add screenshots for mobile UI, CI output, and test output.
-- Add the Netlify live demo link.
-- Add a demo video link.
-- Confirm and document the final public GitHub repository URL.
 - Re-run and document a fresh full Testnet demo after the next contract redeploy, especially escrow-backed invest, usable withdrawal, final withdrawal, and refund paths.
 
 ## Known Limitations
@@ -220,12 +252,12 @@ Live demo link: `TODO`
 
 ## Submission Checklist
 
-- [ ] Public GitHub repository URL
-- [ ] 10+ meaningful commits
-- [ ] Netlify live demo link
+- [x] Public GitHub repository URL — https://github.com/0xrama-k/BitStarter
+- [x] 10+ meaningful commits
+- [x] Netlify live demo link — https://stellar-bitstarter.netlify.app/
 - [x] Stellar Testnet contract IDs
 - [x] Example transaction hashes
-- [ ] Mobile UI screenshot
-- [ ] CI screenshot
-- [ ] Test output screenshot
-- [ ] Demo video link
+- [x] Mobile UI screenshot — `images/mobile_responsive_ui/`
+- [x] CI screenshot — `images/ci_pipeline/`
+- [x] Test output screenshot — `images/test_output/`
+- [x] Demo video link — https://drive.google.com/file/d/1Y_VHg54y4QrUG2sWMtAZnztcPTkBQ6qU/view?usp=sharing

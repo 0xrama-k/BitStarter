@@ -11,3 +11,4 @@ coverage/
 dev-server*.log
 *.tsbuildinfo
 .idea/
+images/demo_video/
