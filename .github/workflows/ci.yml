@@ -3,7 +3,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
   workflow_dispatch:
 
@@ -64,6 +64,13 @@ jobs:
 
       - name: Cache Cargo registry and build output
         uses: Swatinem/rust-cache@v2
+        with:
+          # Don't cache ./target. rust-cache prunes workspace crates' own
+          # outputs (including investment_campaign.wasm) while keeping their
+          # fingerprints, so a cached run makes `cargo build` a no-op and the
+          # wasm that test.rs include_bytes!() is missing. Caching ~/.cargo
+          # still keeps dependency builds fast.
+          cache-targets: false
 
       - name: Build contract WASM artifacts
         run: cargo build --workspace --target wasm32v1-none --release
@@ -77,7 +84,7 @@ jobs:
     needs:
       - frontend
       - contracts
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_NETLIFY_DEPLOY == 'true'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && vars.ENABLE_NETLIFY_DEPLOY == 'true'
     env:
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
